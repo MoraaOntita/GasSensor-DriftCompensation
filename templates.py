@@ -5,7 +5,7 @@ import logging
 # logging string
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(messages)s)')
 
-project_name = 'cnnClassifier'
+project_name = 'sensor'
 
 list_of_files = [
     ".github/workflows/.gitkeep",
