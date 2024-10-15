@@ -1,0 +1,28 @@
+stages:
+  data_ingestion:
+    cmd: python src/sensor/pipeline/stage_01_data_ingestion.py
+    deps:
+      - src/sensor/pipeline/stage_01_data_ingestion.py
+      - config/config.yaml
+    outs:
+      - artifacts/data_ingestion/Dataset 
+
+
+  data_preprocessing:
+    cmd: python src/sensor/pipeline/stage_02_preprocessing.py
+    deps:
+      - src/sensor/pipeline/stage_02_preprocessing.py
+      - artifacts/data_ingestion/Dataset
+      - config/config.yaml
+    outs:
+      - artifacts/preprocessed/preprocessed_data.csv
+
+  prepare_base_model:
+    cmd: python src/sensor/pipeline/stage_03_prepare_base_model.py
+    deps:
+      - src/sensor/pipeline/stage_03_prepare_base_model.py
+      - artifacts/preprocessed/preprocessed_data.csv
+      - config/config.yaml
+    outs:
+      - artifacts/prepared_model/model.keras 
+

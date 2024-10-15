@@ -1,0 +1,60 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/sensor/pipeline/stage_01_data_ingestion.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: ae60fdc884b33ada372418a79f9ce254
+      size: 621
+    - path: src/sensor/pipeline/stage_01_data_ingestion.py
+      hash: md5
+      md5: a662f89e03a9e06e034d3c29e73adb78
+      size: 1311
+    outs:
+    - path: artifacts/data_ingestion/Dataset
+      hash: md5
+      md5: 0340a25a0cccfb56b1dff4b7a724f4b3.dir
+      size: 23537346
+      nfiles: 10
+  data_preprocessing:
+    cmd: python src/sensor/pipeline/stage_02_preprocessing.py
+    deps:
+    - path: artifacts/data_ingestion/Dataset
+      hash: md5
+      md5: 0340a25a0cccfb56b1dff4b7a724f4b3.dir
+      size: 23537346
+      nfiles: 10
+    - path: config/config.yaml
+      hash: md5
+      md5: ae60fdc884b33ada372418a79f9ce254
+      size: 621
+    - path: src/sensor/pipeline/stage_02_preprocessing.py
+      hash: md5
+      md5: 08aac8d882ea409ef8ab284d19882cf9
+      size: 1625
+    outs:
+    - path: artifacts/preprocessed/preprocessed_data.csv
+      hash: md5
+      md5: 0e514d7c51db2c3e2885f622479ba569
+      size: 27815361
+  prepare_base_model:
+    cmd: python src/sensor/pipeline/stage_03_prepare_base_model.py
+    deps:
+    - path: artifacts/preprocessed/preprocessed_data.csv
+      hash: md5
+      md5: 0e514d7c51db2c3e2885f622479ba569
+      size: 27815361
+    - path: config/config.yaml
+      hash: md5
+      md5: ae60fdc884b33ada372418a79f9ce254
+      size: 621
+    - path: src/sensor/pipeline/stage_03_prepare_base_model.py
+      hash: md5
+      md5: ca7fc75031dcd9a6018761578f080681
+      size: 1596
+    outs:
+    - path: artifacts/prepared_model/model.keras
+      hash: md5
+      md5: 02a0aa635cc78379683056e2371c0c4e
+      size: 41424
