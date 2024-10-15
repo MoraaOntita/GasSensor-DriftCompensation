@@ -39,4 +39,11 @@ class Configuration:
         :return: Data preprocessing configurations as a dictionary.
         """
         return self.config.get('data_preprocessing', {})
+    
 
+    def get_prepare_base_model_config(self):
+        """
+        Get base model related configurations from the YAML file.
+        :return: Base model configurations as a dictionary.
+        """
+        return self.config.get('prepare_base_model', {})

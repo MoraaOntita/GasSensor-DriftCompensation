@@ -7,4 +7,6 @@ ensure==1.0.2
 pandas
 seaborn
 matplotlib
+scikit-learn
+tensorflow
 -e .
