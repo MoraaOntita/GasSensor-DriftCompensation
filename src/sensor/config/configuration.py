@@ -31,3 +31,12 @@ class Configuration:
         :return: Data ingestion configurations as a dictionary.
         """
         return self.config.get('data_ingestion', {})
+    
+    
+    def get_data_preprocessing_config(self):
+        """
+        Get data preprocessing related configurations from the YAML file.
+        :return: Data preprocessing configurations as a dictionary.
+        """
+        return self.config.get('data_preprocessing', {})
+

@@ -3,3 +3,8 @@ data_ingestion:
   source_URL: "https://drive.google.com/uc?id=1Xfden1wxDtEeJ8b7qIAgwh9sxdSIkqT0"  
   local_data_file: "artifacts/data_ingestion/gas_sensor_array_drift_dataset.zip"  
   unzip_dir: "artifacts/data_ingestion" 
+
+
+data_preprocessing:
+  preprocessed_dir: "artifacts/preprocessed"
+  preprocessed_file: "preprocessed_data.csv"
