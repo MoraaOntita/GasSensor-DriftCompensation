@@ -1,6 +1,7 @@
 import logging
 from sensor.config.configuration import Configuration
 from sensor.components.preprocessing import Preprocessing
+from sensor.entity.config_entity import DataPreprocessingConfig
 
 # Define the stage name for logging
 STAGE_NAME = "Data Preprocessing Stage"
@@ -11,7 +12,15 @@ class PreprocessingPipeline:
         Initializes the pipeline with configuration and preprocessing components.
         """
         self.config = Configuration()
-        self.preprocessing_config = self.config.get_data_preprocessing_config()
+        preprocessing_config_dict = self.config.get_data_preprocessing_config()
+        
+        # Convert the dictionary to DataPreprocessingConfig object
+        self.preprocessing_config = DataPreprocessingConfig(
+            preprocessed_dir=preprocessing_config_dict['preprocessed_dir'],
+            preprocessed_file=preprocessing_config_dict['preprocessed_file'],
+            num_features=preprocessing_config_dict['num_features'],
+            feature_range=tuple(preprocessing_config_dict['feature_range'])
+        )
     
     def main(self):
         """
@@ -28,8 +37,8 @@ class PreprocessingPipeline:
 
         # Save preprocessed data
         preprocessing.save_preprocessed_data(preprocessed_data)
-
-
+        
+        
 if __name__ == '__main__':
     try:
         # Logging the start of the stage

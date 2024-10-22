@@ -8,13 +8,19 @@ data_ingestion:
 data_preprocessing:
   preprocessed_dir: "artifacts/preprocessed"
   preprocessed_file: "preprocessed_data.csv"
+  num_features: 128
+  feature_range: [0, 1] 
 
 
 prepare_base_model:
-  input_shape: [16]
+  input_shape: [128]
   save_dir: "artifacts/prepared_model/"
   optimizer: "adam"
   classification_loss: "categorical_crossentropy"
   drift_loss: "mean_squared_error"
   classification_metric: "accuracy"
   drift_metric: "mse"
+
+training:
+  root_dir: artifacts/training
+  trained_model_path: artifacts/training/gas_classification_model.keras

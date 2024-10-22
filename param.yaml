@@ -1,0 +1,6 @@
+model_training:
+  epochs: 100
+  batch_size: 32
+  validation_split: 0.2
+  early_stopping_patience: 5
+  restore_best_weights: true

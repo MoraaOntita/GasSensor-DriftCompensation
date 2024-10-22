@@ -2,10 +2,9 @@ import logging
 from src.sensor.pipeline.stage_01_data_ingestion import DataIngestionPipeline
 from src.sensor.pipeline.stage_02_preprocessing import PreprocessingPipeline
 from src.sensor.pipeline.stage_03_prepare_base_model import PrepareBaseModelPipeline
-
+from src.sensor.pipeline.stage_04_train_model import TrainModelPipeline
 
 DATA_INGESTION_STAGE_NAME = "Data Ingestion Stage"
-
 
 def run_data_ingestion():
     """
@@ -20,9 +19,7 @@ def run_data_ingestion():
         logging.error(f"Error occurred during {DATA_INGESTION_STAGE_NAME}: {e}")
         raise e
 
-
 PREPROCESSING_STAGE_NAME = "Data Preprocessing Stage"
-
 
 def run_data_preprocessing():
     """
@@ -52,6 +49,21 @@ def run_base_model_preparation():
         logging.error(f"Error occurred during {BASE_MODEL_PREPARATION_STAGE_NAME}: {e}")
         raise e
 
+TRAIN_MODEL_STAGE_NAME = "Model Training Stage"
+
+def run_model_training():
+    """
+    Runs the model training stage of the pipeline.
+    """
+    try:
+        logging.info(f"Starting {TRAIN_MODEL_STAGE_NAME}.")
+        train_model_pipeline = TrainModelPipeline()  # Create an instance of the training pipeline
+        train_model_pipeline.main()  # Call the main method to run it
+        logging.info(f"{TRAIN_MODEL_STAGE_NAME} completed successfully.")
+    except Exception as e:
+        logging.error(f"Error occurred during {TRAIN_MODEL_STAGE_NAME}: {e}")
+        raise e
+
 def main():
     """
     Main function to run all stages of the pipeline.
@@ -60,6 +72,7 @@ def main():
         run_data_ingestion()
         run_data_preprocessing()
         run_base_model_preparation()  # Run the base model preparation stage
+        run_model_training()  # Run the model training stage
 
     except Exception as e:
         logging.error(f"Pipeline failed with error: {e}")

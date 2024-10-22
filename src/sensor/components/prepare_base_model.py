@@ -1,101 +1,115 @@
 import os
 import logging
 import tensorflow as tf
+from tensorflow.keras import layers, models
 from sensor.utils.common import create_required_directories
 from sensor.config.configuration import Configuration
 from sensor.entity.config_entity import ModelConfig
+
 
 class PrepareBaseModel:
     def __init__(self, config: ModelConfig):
         """
         Initialize PrepareBaseModel with configuration.
+
         :param config: ModelConfig instance containing model configuration.
         """
         self.config = config
         self.model = None
+        logging.info("PrepareBaseModel initialized with configuration.")
 
     def get_base_model(self):
         """
-        Build and save the base model.
+        Build and return the base model for gas classification.
         """
-        input_shape = self.config.input_shape
-        self.model = self.build_multitask_model(input_shape)
-        self.save_model(path=self.config.save_dir, model=self.model)
+        try:
+            input_shape = self.config.input_shape  # Expecting (128,) after preprocessing
+            self.model = self.build_gas_classification_model(input_shape)
+            self.save_model(path=self.config.save_dir, model=self.model)
+            logging.info("Base model built and saved successfully.")
+            
+            # Return the model here
+            return self.model
+        
+        except Exception as e:
+            logging.error(f"Error in get_base_model: {e}")
+            raise
 
-    def build_multitask_model(self, input_shape):
+
+    def build_gas_classification_model(self, input_shape):
         """
-        Build the multi-task neural network architecture.
+        Build the gas classification neural network architecture.
+
         :param input_shape: Shape of the input data.
         :return: Compiled Keras model.
         """
-        # Input Layer
-        inputs = tf.keras.layers.Input(shape=input_shape)
+        try:
+            # Input Layer
+            inputs = layers.Input(shape=input_shape)
 
-        # Shared Layers
-        shared = tf.keras.layers.Dense(64, activation='relu')(inputs)
-        shared = tf.keras.layers.Dense(32, activation='relu')(shared)
+            # Hidden Layers
+            x = layers.Dense(128, activation='relu')(inputs)
+            x = layers.Dropout(0.3)(x)  # Regularization
+            x = layers.Dense(64, activation='relu')(x)
+            x = layers.Dropout(0.3)(x)
+            x = layers.Dense(32, activation='relu')(x)
 
-        # Output for Gas Classification
-        classification_output = tf.keras.layers.Dense(6, activation='softmax', name='gas_classification')(shared)
+            # Output Layer for Gas Classification
+            classification_output = layers.Dense(6, activation='softmax', name='gas_classification')(x)
 
-        # Output for Drift Prediction
-        drift_output = tf.keras.layers.Dense(1, name='drift_prediction')(shared)
+            # Create the model
+            model = models.Model(inputs=inputs, outputs=classification_output)
 
-        # Build the model
-        model = tf.keras.Model(inputs=inputs, outputs=[classification_output, drift_output])
+            # Compile the model
+            model.compile(optimizer=self.config.optimizer, 
+                          loss=self.config.classification_loss,
+                          metrics=[self.config.classification_metric])
 
-        # Compile the model
-        model.compile(optimizer=self.config.optimizer,
-                      loss={
-                          'gas_classification': self.config.classification_loss,
-                          'drift_prediction': self.config.drift_loss
-                      },
-                      metrics={
-                          'gas_classification': self.config.classification_metric,
-                          'drift_prediction': self.config.drift_metric
-                      })
+            logging.info("Gas classification model built successfully.")
+            return model
 
-        return model
+        except Exception as e:
+            logging.error(f"Error in build_gas_classification_model: {e}")
+            raise
 
     def save_model(self, path: str, model: tf.keras.Model):
         """
         Save the model to the specified path.
+
         :param path: Path to save the model (should include filename and extension).
         :param model: Keras model to save.
         """
-        # Ensure the directory exists
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        try:
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(path), exist_ok=True)
 
-        # Add a filename and extension to the path if it's just a directory
-        if os.path.isdir(path):
-            path = os.path.join(path, "model.keras")  # or "model.h5", depending on your preference
+            # Add a filename and extension to the path if it's just a directory
+            if os.path.isdir(path):
+                path = os.path.join(path, "gas_classification_model.keras")
 
-        model.save(path)
-        logging.info(f"Model saved successfully at {path}")
-
-    def update_and_save_full_model(self):
-        """
-        Prepare and save the full model with additional configurations if needed.
-        This method can be extended for further customizations.
-        """
-        self.save_model(path=os.path.join(self.config.save_dir, "updated_model.keras"), model=self.model)
+            model.save(path)
+            logging.info(f"Model saved successfully at {path}")
+        except Exception as e:
+            logging.error(f"Error saving the model: {e}")
+            raise
 
 def prepare_base_model():
     """
     Prepare and save the base model.
     """
-    # Load configuration
-    config = Configuration()
-    model_config = config.get_model_config()
+    try:
+        # Load configuration
+        config = Configuration()
+        model_config = config.get_model_config()
 
-    # Create necessary directories for saving the model
-    create_required_directories()
+        # Create necessary directories for saving the model
+        create_required_directories()
 
-    # Instantiate PrepareBaseModel class
-    prepare_model = PrepareBaseModel(config=model_config)
+        # Instantiate PrepareBaseModel class
+        prepare_model = PrepareBaseModel(config=model_config)
 
-    # Build and save the base model
-    prepare_model.get_base_model()
+        # Build and save the base model
+        prepare_model.get_base_model()
 
-    # Optional: Update and save the full model if needed
-    prepare_model.update_and_save_full_model()
+    except Exception as e:
+        logging.error(f"Error in prepare_base_model: {e}")
