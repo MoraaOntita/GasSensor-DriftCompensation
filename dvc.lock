@@ -5,8 +5,8 @@ stages:
     deps:
     - path: config/config.yaml
       hash: md5
-      md5: ae60fdc884b33ada372418a79f9ce254
-      size: 621
+      md5: b9af08e969e75e472e0e8d0b421fef7c
+      size: 780
     - path: src/sensor/pipeline/stage_01_data_ingestion.py
       hash: md5
       md5: a662f89e03a9e06e034d3c29e73adb78
@@ -27,34 +27,34 @@ stages:
       nfiles: 10
     - path: config/config.yaml
       hash: md5
-      md5: ae60fdc884b33ada372418a79f9ce254
-      size: 621
+      md5: b9af08e969e75e472e0e8d0b421fef7c
+      size: 780
     - path: src/sensor/pipeline/stage_02_preprocessing.py
       hash: md5
-      md5: 08aac8d882ea409ef8ab284d19882cf9
-      size: 1625
+      md5: 14399460994869501f89bc5f38d732d1
+      size: 2150
     outs:
     - path: artifacts/preprocessed/preprocessed_data.csv
       hash: md5
-      md5: 0e514d7c51db2c3e2885f622479ba569
-      size: 27815361
+      md5: a26843eba512ab086c60a4056579d207
+      size: 35112691
   prepare_base_model:
     cmd: python src/sensor/pipeline/stage_03_prepare_base_model.py
     deps:
     - path: artifacts/preprocessed/preprocessed_data.csv
       hash: md5
-      md5: 0e514d7c51db2c3e2885f622479ba569
-      size: 27815361
+      md5: a26843eba512ab086c60a4056579d207
+      size: 35112691
     - path: config/config.yaml
       hash: md5
-      md5: ae60fdc884b33ada372418a79f9ce254
-      size: 621
+      md5: b9af08e969e75e472e0e8d0b421fef7c
+      size: 780
     - path: src/sensor/pipeline/stage_03_prepare_base_model.py
       hash: md5
       md5: ca7fc75031dcd9a6018761578f080681
       size: 1596
     outs:
-    - path: artifacts/prepared_model/model.keras
+    - path: artifacts/prepared_model/gas_classification_model.keras
       hash: md5
-      md5: 02a0aa635cc78379683056e2371c0c4e
-      size: 41424
+      md5: e4e4cd33a30683870814219f70d25525
+      size: 140691

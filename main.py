@@ -3,6 +3,8 @@ from src.sensor.pipeline.stage_01_data_ingestion import DataIngestionPipeline
 from src.sensor.pipeline.stage_02_preprocessing import PreprocessingPipeline
 from src.sensor.pipeline.stage_03_prepare_base_model import PrepareBaseModelPipeline
 from src.sensor.pipeline.stage_04_train_model import TrainModelPipeline
+from src.sensor.pipeline.stage_05_evaluate_model import EvaluateModelPipeline
+
 
 DATA_INGESTION_STAGE_NAME = "Data Ingestion Stage"
 
@@ -64,6 +66,21 @@ def run_model_training():
         logging.error(f"Error occurred during {TRAIN_MODEL_STAGE_NAME}: {e}")
         raise e
 
+EVALUATE_MODEL_STAGE_NAME = "Model Evaluation Stage"
+
+def run_model_evaluation():
+    """
+    Runs the model evaluation stage of the pipeline.
+    """
+    try:
+        logging.info(f"Starting {EVALUATE_MODEL_STAGE_NAME}.")
+        evaluate_model_pipeline = EvaluateModelPipeline()  # Create an instance of the evaluation pipeline
+        evaluate_model_pipeline.main()  # Call the main method to run it
+        logging.info(f"{EVALUATE_MODEL_STAGE_NAME} completed successfully.")
+    except Exception as e:
+        logging.error(f"Error occurred during {EVALUATE_MODEL_STAGE_NAME}: {e}")
+        raise e
+
 def main():
     """
     Main function to run all stages of the pipeline.
@@ -73,6 +90,7 @@ def main():
         run_data_preprocessing()
         run_base_model_preparation()  # Run the base model preparation stage
         run_model_training()  # Run the model training stage
+        run_model_evaluation()  # Run the model evaluation stage
 
     except Exception as e:
         logging.error(f"Pipeline failed with error: {e}")

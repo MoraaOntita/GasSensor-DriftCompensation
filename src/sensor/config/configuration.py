@@ -3,6 +3,9 @@ import yaml
 import logging
 from sensor.constants import CONFIG_FILE_PATH
 from sensor.entity.config_entity import ModelConfig
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class Configuration:
@@ -73,16 +76,15 @@ class Configuration:
         """
         return self.params.get('model_training', {})
     
+        
     def get_training_data_path(self):
-            """
-            Gets the path of the preprocessed training data file.
+        """
+        Returns the path to the preprocessed training data file.
+        """
+        preprocessed_file = self.get_data_preprocessing_config()['preprocessed_file']
+        preprocessed_dir = self.get_data_preprocessing_config()['preprocessed_dir']
+        return os.path.join(preprocessed_dir, preprocessed_file)
 
-            :return: Path to the preprocessed training data file.
-            """
-            return os.path.join(
-                self.config.get('data_preprocessing', {}).get('preprocessed_dir', ''),
-                self.config.get('data_preprocessing', {}).get('preprocessed_file', '')
-            )    
     
     def get_prepare_base_model_config(self):
         """
@@ -95,3 +97,16 @@ class Configuration:
         except KeyError as e:
             logging.error(f"Key 'prepare_base_model' not found in the configuration file: {e}")
             raise e
+
+
+    def get_mlflow_config(self):
+        """
+        Retrieves MLflow configuration from environment variables.
+
+        :return: Dictionary containing MLflow configuration.
+        """
+        return {
+            "tracking_uri": os.getenv("MLFLOW_TRACKING_URI"),
+            "username": os.getenv("MLFLOW_TRACKING_USERNAME"),
+            "password": os.getenv("MLFLOW_TRACKING_PASSWORD"),
+        }

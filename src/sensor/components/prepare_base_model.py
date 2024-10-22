@@ -23,12 +23,12 @@ class PrepareBaseModel:
         Build and return the base model for gas classification.
         """
         try:
-            input_shape = self.config.input_shape  # Expecting (128,) after preprocessing
+            # Ensure input_shape is a tuple
+            input_shape = tuple(self.config.input_shape)  
             self.model = self.build_gas_classification_model(input_shape)
             self.save_model(path=self.config.save_dir, model=self.model)
             logging.info("Base model built and saved successfully.")
             
-            # Return the model here
             return self.model
         
         except Exception as e:
@@ -93,6 +93,7 @@ class PrepareBaseModel:
             logging.error(f"Error saving the model: {e}")
             raise
 
+
 def prepare_base_model():
     """
     Prepare and save the base model.
@@ -100,12 +101,15 @@ def prepare_base_model():
     try:
         # Load configuration
         config = Configuration()
-        model_config = config.get_model_config()
+        model_config_dict = config.get_model_config()  # Get the model config as a dictionary
+
+        # Convert dictionary to ModelConfig instance
+        model_config = ModelConfig.from_dict(model_config_dict)
 
         # Create necessary directories for saving the model
         create_required_directories()
 
-        # Instantiate PrepareBaseModel class
+        # Instantiate PrepareBaseModel class with ModelConfig instance
         prepare_model = PrepareBaseModel(config=model_config)
 
         # Build and save the base model
@@ -113,3 +117,4 @@ def prepare_base_model():
 
     except Exception as e:
         logging.error(f"Error in prepare_base_model: {e}")
+

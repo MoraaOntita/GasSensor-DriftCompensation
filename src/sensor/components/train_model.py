@@ -1,25 +1,27 @@
 import os
 import logging
 import pandas as pd
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sensor.config.configuration import Configuration
-from sensor.entity.config_entity import ModelConfig, DataPreprocessingConfig
+from sensor.entity.config_entity import ModelConfig
 from sensor.components.prepare_base_model import PrepareBaseModel
 from sensor.utils.common import create_required_directories
 
 
 class TrainModel:
-    def __init__(self, model_config: ModelConfig, training_config: dict, data: pd.DataFrame):
+    def __init__(self, model_config: ModelConfig, training_config: dict, data: pd.DataFrame, target_column: str = 'target'):
         """
         Initializes the TrainModel class.
 
         :param model_config: Model configuration.
         :param training_config: Dictionary containing training parameters.
         :param data: Preprocessed data for training.
+        :param target_column: Target column for prediction.
         """
         self.model_config = model_config
         self.training_config = training_config
         self.data = data
+        self.target_column = target_column  # Dynamically passed target column
         self.model = None
 
     def load_data(self):
@@ -30,8 +32,8 @@ class TrainModel:
         """
         try:
             # Separate features and target
-            X = self.data.drop('target', axis=1)
-            y = self.data['target']
+            X = self.data.drop(self.target_column, axis=1)  # Drop the target column dynamically
+            y = self.data[self.target_column]
 
             # One-hot encoding for the target variable
             y_encoded = pd.get_dummies(y)
@@ -58,21 +60,28 @@ class TrainModel:
 
             # Define callbacks
             early_stopping = EarlyStopping(
-                patience=self.training_config['early_stopping_patience'],
-                restore_best_weights=self.training_config['restore_best_weights']
+                patience=self.training_config.get('early_stopping_patience', 5),
+                restore_best_weights=self.training_config.get('restore_best_weights', True)
+            )
+            
+            model_checkpoint = ModelCheckpoint(
+                filepath=os.path.join("artifacts/training", "best_model.keras"),
+                save_best_only=True,
+                monitor="val_loss",
+                verbose=1
             )
 
             # Train the model
             history = self.model.fit(
                 X_train, y_train,
-                validation_split=self.training_config['validation_split'],
-                epochs=self.training_config['epochs'],
-                batch_size=self.training_config['batch_size'],
-                callbacks=[early_stopping]
+                validation_split=self.training_config.get('validation_split', 0.2),
+                epochs=self.training_config.get('epochs', 10),
+                batch_size=self.training_config.get('batch_size', 32),
+                callbacks=[early_stopping, model_checkpoint]
             )
 
-            # Save the trained model to the specified path
-            model_save_path = os.path.join("artifacts/training", "gas_classification_model.keras")
+            # Save the final trained model to the specified path
+            model_save_path = os.path.join("artifacts/training", "gas_classification_model_final.keras")
             prepare_model.save_model(model_save_path, self.model)
 
             # Save training history
@@ -105,7 +114,14 @@ def train_model():
     try:
         # Load configuration
         config = Configuration()
-        model_config = config.get_model_config()
+        
+        # Get model configuration as a dictionary
+        model_config_dict = config.get_model_config()  
+        
+        # Create an instance of ModelConfig from the dictionary
+        model_config = ModelConfig.from_dict(model_config_dict) 
+        
+        # Load training parameters with fallback defaults
         training_config = config.get_training_params()
 
         # Load preprocessed data
@@ -113,7 +129,7 @@ def train_model():
         data = pd.read_csv(preprocessed_data_path)
 
         # Create necessary directories for saving the training history and model
-        create_required_directories()
+        create_required_directories("artifacts/training")  # Ensure directories exist
 
         # Instantiate the TrainModel class
         trainer = TrainModel(model_config=model_config, training_config=training_config, data=data)

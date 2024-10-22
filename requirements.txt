@@ -9,4 +9,7 @@ seaborn
 matplotlib
 scikit-learn
 tensorflow
+mlflow
+python-dotenv
+
 -e .
