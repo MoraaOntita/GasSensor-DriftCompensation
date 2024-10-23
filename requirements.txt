@@ -13,4 +13,5 @@ mlflow
 python-dotenv
 requests
 flask
+dvc
 -e .
