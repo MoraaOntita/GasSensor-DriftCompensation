@@ -56,5 +56,44 @@ stages:
     outs:
     - path: artifacts/prepared_model/gas_classification_model.keras
       hash: md5
-      md5: e4e4cd33a30683870814219f70d25525
+      md5: 134069e8627641aeed4c9fdbcc4c53dc
       size: 140691
+  train_model:
+    cmd: python src/sensor/pipeline/stage_04_train_model.py
+    deps:
+    - path: artifacts/prepared_model/gas_classification_model.keras
+      hash: md5
+      md5: 4021f2e48cb59b969ce0128f46a87bb8
+      size: 140691
+    - path: artifacts/preprocessed/preprocessed_data.csv
+      hash: md5
+      md5: a26843eba512ab086c60a4056579d207
+      size: 35112691
+    - path: src/sensor/pipeline/stage_04_train_model.py
+      hash: md5
+      md5: c0a1ec7985ed2f80386774a550b3968b
+      size: 2891
+    outs:
+    - path: artifacts/training/gas_classification_model_final.keras
+      hash: md5
+      md5: 65f740530042fa0fad2f97d42676f54a
+      size: 362243
+    - path: artifacts/training/training_history.csv
+      hash: md5
+      md5: d54f6626c96d92483018cc87b81956cc
+      size: 2118
+  evaluate_model:
+    cmd: python src/sensor/pipeline/stage_05_evaluate_model.py
+    deps:
+    - path: artifacts/preprocessed/preprocessed_data.csv
+      hash: md5
+      md5: a26843eba512ab086c60a4056579d207
+      size: 35112691
+    - path: artifacts/training/gas_classification_model_final.keras
+      hash: md5
+      md5: 65f740530042fa0fad2f97d42676f54a
+      size: 362243
+    - path: src/sensor/pipeline/stage_05_evaluate_model.py
+      hash: md5
+      md5: e780eba49f5d4a2a0ec3f47aa48e5486
+      size: 2471

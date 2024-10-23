@@ -2,27 +2,42 @@ stages:
   data_ingestion:
     cmd: python src/sensor/pipeline/stage_01_data_ingestion.py
     deps:
-      - src/sensor/pipeline/stage_01_data_ingestion.py
-      - config/config.yaml
+    - src/sensor/pipeline/stage_01_data_ingestion.py
+    - config/config.yaml
     outs:
-      - artifacts/data_ingestion/Dataset 
+    - artifacts/data_ingestion/Dataset
 
 
   data_preprocessing:
     cmd: python src/sensor/pipeline/stage_02_preprocessing.py
     deps:
-      - src/sensor/pipeline/stage_02_preprocessing.py
-      - artifacts/data_ingestion/Dataset
-      - config/config.yaml
+    - src/sensor/pipeline/stage_02_preprocessing.py
+    - artifacts/data_ingestion/Dataset
+    - config/config.yaml
     outs:
-      - artifacts/preprocessed/preprocessed_data.csv
+    - artifacts/preprocessed/preprocessed_data.csv
 
   prepare_base_model:
     cmd: python src/sensor/pipeline/stage_03_prepare_base_model.py
     deps:
-      - src/sensor/pipeline/stage_03_prepare_base_model.py
-      - artifacts/preprocessed/preprocessed_data.csv
-      - config/config.yaml
+    - src/sensor/pipeline/stage_03_prepare_base_model.py
+    - artifacts/preprocessed/preprocessed_data.csv
+    - config/config.yaml
     outs:
-      - artifacts/prepared_model/gas_classification_model.keras 
+    - artifacts/prepared_model/gas_classification_model.keras
 
+  train_model:
+    cmd: python src/sensor/pipeline/stage_04_train_model.py
+    deps:
+    - artifacts/prepared_model/gas_classification_model.keras
+    - artifacts/preprocessed/preprocessed_data.csv
+    - src/sensor/pipeline/stage_04_train_model.py
+    outs:
+    - artifacts/training/gas_classification_model_final.keras
+    - artifacts/training/training_history.csv
+  evaluate_model:
+    cmd: python src/sensor/pipeline/stage_05_evaluate_model.py
+    deps:
+    - artifacts/preprocessed/preprocessed_data.csv
+    - artifacts/training/gas_classification_model_final.keras
+    - src/sensor/pipeline/stage_05_evaluate_model.py
