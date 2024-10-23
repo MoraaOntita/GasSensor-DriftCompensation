@@ -11,5 +11,6 @@ scikit-learn
 tensorflow
 mlflow
 python-dotenv
-
+requests
+flask
 -e .
