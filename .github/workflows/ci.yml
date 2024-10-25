@@ -43,4 +43,4 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          docker push yourusername/gas_sensor_app:latest
+          docker push moraaontita/gas_sensor_app:latest
