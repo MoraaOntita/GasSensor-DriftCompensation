@@ -14,4 +14,6 @@ python-dotenv
 requests
 flask
 dvc
+flake8
+
 -e .
