@@ -36,7 +36,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t yourusername/gas_sensor_app:latest .
+          docker build -t moraaontita/gas_sensor_app:latest .
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
